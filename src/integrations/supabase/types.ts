@@ -14,7 +14,74 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      companies: {
+        Row: {
+          application_link: string
+          color_index: number
+          created_at: string
+          description: string
+          id: string
+          logo: string | null
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          application_link: string
+          color_index?: number
+          created_at?: string
+          description: string
+          id?: string
+          logo?: string | null
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          application_link?: string
+          color_index?: number
+          created_at?: string
+          description?: string
+          id?: string
+          logo?: string | null
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      company_pdfs: {
+        Row: {
+          company_id: string
+          created_at: string
+          file_path: string
+          id: string
+          name: string
+          size: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          file_path: string
+          id?: string
+          name: string
+          size: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          file_path?: string
+          id?: string
+          name?: string
+          size?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_pdfs_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
