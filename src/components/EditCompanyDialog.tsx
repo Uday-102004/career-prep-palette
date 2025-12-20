@@ -1,26 +1,28 @@
-import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { useState, useEffect } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Plus, Link2, X } from 'lucide-react';
+import { Link2, X } from 'lucide-react';
 import { useCompanies } from '@/contexts/CompanyContext';
+import { Company } from '@/types';
 import { toast } from 'sonner';
 
 interface PDFLink {
+  id?: string;
   name: string;
   url: string;
 }
 
-interface AddCompanyDialogProps {
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
+interface EditCompanyDialogProps {
+  company: Company;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
-export const AddCompanyDialog = ({ open, onOpenChange }: AddCompanyDialogProps) => {
-  const { addCompany } = useCompanies();
-  const [isOpen, setIsOpen] = useState(false);
+export const EditCompanyDialog = ({ company, open, onOpenChange }: EditCompanyDialogProps) => {
+  const { updateCompany } = useCompanies();
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -29,8 +31,21 @@ export const AddCompanyDialog = ({ open, onOpenChange }: AddCompanyDialogProps) 
   });
   const [pdfLinks, setPdfLinks] = useState<PDFLink[]>([]);
 
-  const dialogOpen = open !== undefined ? open : isOpen;
-  const setDialogOpen = onOpenChange || setIsOpen;
+  useEffect(() => {
+    if (company) {
+      setFormData({
+        name: company.name,
+        description: company.description,
+        applicationLink: company.applicationLink,
+        logo: company.logo || '',
+      });
+      setPdfLinks(company.pdfs.map(pdf => ({
+        id: pdf.id,
+        name: pdf.name,
+        url: pdf.url,
+      })));
+    }
+  }, [company]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,23 +58,21 @@ export const AddCompanyDialog = ({ open, onOpenChange }: AddCompanyDialogProps) 
     // Filter out empty PDF links
     const validPdfs = pdfLinks.filter(pdf => pdf.name && pdf.url);
 
-    addCompany({
+    updateCompany(company.id, {
       name: formData.name,
       description: formData.description,
       applicationLink: formData.applicationLink,
-      logo: formData.logo,
+      logo: formData.logo || undefined,
       pdfs: validPdfs.map((pdf, index) => ({
-        id: `pdf-${Date.now()}-${index}`,
+        id: pdf.id || `pdf-${Date.now()}-${index}`,
         name: pdf.name,
         url: pdf.url,
         size: 'External Link',
       })),
     });
 
-    toast.success('Company added successfully!');
-    setFormData({ name: '', description: '', applicationLink: '', logo: '' });
-    setPdfLinks([]);
-    setDialogOpen(false);
+    toast.success('Company updated successfully!');
+    onOpenChange(false);
   };
 
   const addPdfLink = () => {
@@ -77,23 +90,17 @@ export const AddCompanyDialog = ({ open, onOpenChange }: AddCompanyDialogProps) 
   };
 
   return (
-    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-      <DialogTrigger asChild>
-        <Button variant="accent" size="lg" className="gap-2">
-          <Plus className="h-5 w-5" />
-          Add Company
-        </Button>
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-xl">Add New Company</DialogTitle>
+          <DialogTitle className="text-xl">Edit Company</DialogTitle>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-5 mt-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Company Name *</Label>
+            <Label htmlFor="edit-name">Company Name *</Label>
             <Input
-              id="name"
+              id="edit-name"
               value={formData.name}
               onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
               placeholder="e.g., Google"
@@ -102,9 +109,9 @@ export const AddCompanyDialog = ({ open, onOpenChange }: AddCompanyDialogProps) 
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Description *</Label>
+            <Label htmlFor="edit-description">Description *</Label>
             <Textarea
-              id="description"
+              id="edit-description"
               value={formData.description}
               onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
               placeholder="Brief description about the company..."
@@ -113,9 +120,9 @@ export const AddCompanyDialog = ({ open, onOpenChange }: AddCompanyDialogProps) 
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="applicationLink">Application Link *</Label>
+            <Label htmlFor="edit-applicationLink">Application Link *</Label>
             <Input
-              id="applicationLink"
+              id="edit-applicationLink"
               type="url"
               value={formData.applicationLink}
               onChange={(e) => setFormData(prev => ({ ...prev, applicationLink: e.target.value }))}
@@ -125,9 +132,9 @@ export const AddCompanyDialog = ({ open, onOpenChange }: AddCompanyDialogProps) 
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="logo">Logo URL (optional)</Label>
+            <Label htmlFor="edit-logo">Logo URL (optional)</Label>
             <Input
-              id="logo"
+              id="edit-logo"
               type="url"
               value={formData.logo}
               onChange={(e) => setFormData(prev => ({ ...prev, logo: e.target.value }))}
@@ -180,17 +187,17 @@ export const AddCompanyDialog = ({ open, onOpenChange }: AddCompanyDialogProps) 
             
             {pdfLinks.length === 0 && (
               <p className="text-sm text-muted-foreground">
-                No PDF links added. Click "Add PDF Link" to add document links.
+                No PDF links. Click "Add PDF Link" to add document links.
               </p>
             )}
           </div>
 
           <div className="flex gap-3 pt-4">
-            <Button type="button" variant="outline" className="flex-1" onClick={() => setDialogOpen(false)}>
+            <Button type="button" variant="outline" className="flex-1" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
             <Button type="submit" variant="accent" className="flex-1">
-              Add Company
+              Save Changes
             </Button>
           </div>
         </form>
