@@ -21,8 +21,8 @@ const initialCompanies: Company[] = [
     logo: '',
     colorIndex: 0,
     pdfs: [
-      { id: 'p1', name: 'Interview Guide.pdf', url: '#', size: '2.4 MB' },
-      { id: 'p2', name: 'Coding Questions.pdf', url: '#', size: '1.8 MB' },
+      { id: 'p1', name: 'Interview Guide', url: 'https://drive.google.com/example1', size: 'External Link' },
+      { id: 'p2', name: 'Coding Questions', url: 'https://drive.google.com/example2', size: 'External Link' },
     ],
     createdAt: new Date(),
   },
@@ -34,7 +34,7 @@ const initialCompanies: Company[] = [
     logo: '',
     colorIndex: 1,
     pdfs: [
-      { id: 'p3', name: 'System Design.pdf', url: '#', size: '3.1 MB' },
+      { id: 'p3', name: 'System Design', url: 'https://drive.google.com/example3', size: 'External Link' },
     ],
     createdAt: new Date(),
   },
@@ -46,8 +46,8 @@ const initialCompanies: Company[] = [
     logo: '',
     colorIndex: 2,
     pdfs: [
-      { id: 'p4', name: 'Leadership Principles.pdf', url: '#', size: '1.2 MB' },
-      { id: 'p5', name: 'Behavioral Questions.pdf', url: '#', size: '980 KB' },
+      { id: 'p4', name: 'Leadership Principles', url: 'https://drive.google.com/example4', size: 'External Link' },
+      { id: 'p5', name: 'Behavioral Questions', url: 'https://drive.google.com/example5', size: 'External Link' },
     ],
     createdAt: new Date(),
   },
@@ -59,7 +59,7 @@ const initialCompanies: Company[] = [
     logo: '',
     colorIndex: 3,
     pdfs: [
-      { id: 'p6', name: 'Product Sense Guide.pdf', url: '#', size: '2.8 MB' },
+      { id: 'p6', name: 'Product Sense Guide', url: 'https://drive.google.com/example6', size: 'External Link' },
     ],
     createdAt: new Date(),
   },
@@ -71,7 +71,7 @@ const initialCompanies: Company[] = [
     logo: '',
     colorIndex: 4,
     pdfs: [
-      { id: 'p7', name: 'Design Philosophy.pdf', url: '#', size: '4.2 MB' },
+      { id: 'p7', name: 'Design Philosophy', url: 'https://drive.google.com/example7', size: 'External Link' },
     ],
     createdAt: new Date(),
   },
@@ -83,7 +83,7 @@ const initialCompanies: Company[] = [
     logo: '',
     colorIndex: 5,
     pdfs: [
-      { id: 'p8', name: 'Culture Deck.pdf', url: '#', size: '1.5 MB' },
+      { id: 'p8', name: 'Culture Deck', url: 'https://drive.google.com/example8', size: 'External Link' },
     ],
     createdAt: new Date(),
   },

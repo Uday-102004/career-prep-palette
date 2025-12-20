@@ -3,6 +3,7 @@ import { useCompanies } from '@/contexts/CompanyContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { Header } from '@/components/Header';
 import { Button } from '@/components/ui/button';
+import { EditCompanyDialog } from '@/components/EditCompanyDialog';
 import { ArrowLeft, Building2, Download, ExternalLink, FileText, Trash2, Edit } from 'lucide-react';
 import { CARD_COLORS } from '@/types';
 import { toast } from 'sonner';
@@ -24,6 +25,7 @@ const CompanyDetails = () => {
   const { user } = useAuth();
   const { getCompany, deleteCompany } = useCompanies();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
   
   const isAdmin = user?.role === 'admin';
   const company = getCompany(id || '');
@@ -52,9 +54,10 @@ const CompanyDetails = () => {
   const colorKey = CARD_COLORS[company.colorIndex % CARD_COLORS.length];
   const bgClass = colorClasses[colorKey];
 
-  const handleDownload = (pdfName: string) => {
-    toast.success(`Downloading ${pdfName}...`);
-    // In production, this would trigger actual file download
+  const handleDownload = (pdfUrl: string, pdfName: string) => {
+    // Open PDF link in new tab for download
+    window.open(pdfUrl, '_blank');
+    toast.success(`Opening ${pdfName}...`);
   };
 
   const handleApply = () => {
@@ -124,7 +127,7 @@ const CompanyDetails = () => {
               
               {isAdmin && (
                 <>
-                  <Button variant="outline">
+                  <Button variant="outline" onClick={() => setShowEditDialog(true)}>
                     <Edit className="h-4 w-4 mr-2" />
                     Edit Company
                   </Button>
@@ -163,13 +166,12 @@ const CompanyDetails = () => {
                     </div>
                   </div>
                   <Button
-                    variant="ghost"
+                    variant="accent"
                     size="sm"
-                    onClick={() => handleDownload(pdf.name)}
-                    className="text-accent hover:text-accent"
+                    onClick={() => handleDownload(pdf.url, pdf.name)}
                   >
                     <Download className="h-4 w-4 mr-2" />
-                    Download
+                    Download PDF
                   </Button>
                 </div>
               ))}
@@ -182,6 +184,15 @@ const CompanyDetails = () => {
           )}
         </div>
       </main>
+
+      {/* Edit Company Dialog */}
+      {isAdmin && (
+        <EditCompanyDialog
+          company={company}
+          open={showEditDialog}
+          onOpenChange={setShowEditDialog}
+        />
+      )}
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
